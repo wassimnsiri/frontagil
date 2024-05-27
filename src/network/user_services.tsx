@@ -76,7 +76,7 @@ export const fetchUserData = async () => {
       throw error; // Re-throw the error to be handled in the calling component
     }
   };
-  export const createAdmin = async (credentials: { email?: string; username?: string; password: string }): Promise<CreateAdminResponse> => {
+  export const createAdmin = async (credentials: { email?: string; username?: string; password: string, role?: string }): Promise<CreateAdminResponse> => {
     try {
       const token = localStorage.getItem('token'); // Récupérez le token depuis le localStorage
       if (!token) {

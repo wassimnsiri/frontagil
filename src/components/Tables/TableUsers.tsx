@@ -15,6 +15,7 @@ const TableUsers = () => {
     email: '',
     password: '',
     matricule: '',
+    role: '',
   });
   const [showAddAdminModal, setShowAddAdminModal] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
@@ -60,6 +61,7 @@ const TableUsers = () => {
         email: '',
         password: '',
         matricule: '',
+        role: '',
       });
       setSuccessMessage('New admin successfully created!'); // Set success message
       setShowAddAdminModal(false); // Close modal after success
@@ -133,6 +135,27 @@ const TableUsers = () => {
               onChange={handleChange}
             />
           </div>
+          <div className="mb-4">
+    <label className="block text-white text-sm font-bold mb-2" htmlFor="role">
+        role
+    </label>
+    <input
+        className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline bg-yellow-100"
+        id="role"
+        type="text"
+        placeholder="role"
+        name="role"
+        list="roles"
+        value={newAdmin.role}
+        onChange={handleChange}
+    />
+    <datalist id="roles">
+        <option value="gerant" />
+        <option value="intervenant" />
+        <option value="chauffeur" />
+    </datalist>
+</div>
+
 
           <div className="relative">
             <FaLock className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400" />
