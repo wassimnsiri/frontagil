@@ -24,6 +24,8 @@ import ResetPassword from './components/Login/ResetPassword';
 import Movies from './pages/movie';
 import { Depot } from './pages/Depot';
 import { Chauffeur } from './pages/Chauffeurs';
+import Panier from './pages/Gerant_layout/panier';
+
 
 
 
@@ -124,6 +126,7 @@ function App() {
             </>
           }
         />
+     
         <Route
           path="/produits"
           element={
