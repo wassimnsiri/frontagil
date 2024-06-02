@@ -24,8 +24,9 @@ import ResetPassword from './components/Login/ResetPassword';
 import Movies from './pages/movie';
 import { Depot } from './pages/Depot';
 import { Chauffeur } from './pages/Chauffeurs';
-import Panier from './pages/Gerant_layout/panier';
-import TableThree from './components/Tables/TableThree';
+import { Commande } from './pages/Commande';
+import Reclamation from './pages/Gerant_layout/reclamation';
+
 
 
 
@@ -68,7 +69,7 @@ function App() {
           element={
             <>
               <PageTitle title="Calendar | Movie Flow" />
-              <TableThree />
+              <Commande />
             </>
           }
         />
@@ -162,6 +163,15 @@ function App() {
             <>
               <PageTitle title="Basic Chart | TailAdmin - Tailwind CSS Admin Dashboard Template" />
               <Welcome />
+            </>
+          }
+        />
+         <Route
+          path="/reclamation"
+          element={
+            <>
+              <PageTitle title="Basic Chart | TailAdmin - Tailwind CSS Admin Dashboard Template" />
+              <Reclamation />
             </>
           }
         />

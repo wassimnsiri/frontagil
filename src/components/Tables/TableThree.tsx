@@ -18,18 +18,44 @@ const TableThree: React.FC = () => {
   const [groupedCommandes, setGroupedCommandes] = useState<GroupedCommandes[]>([]);
 
   useEffect(() => {
-    const fetchCommandes = async () => {
-      try {
-        const response = await fetch('http://localhost:3030/commande/getcommande'); // Adjust the endpoint as needed
-        const data: GroupedCommandes[] = await response.json();
-        setGroupedCommandes(data);
-      } catch (error) {
-        console.error('Error fetching commandes:', error);
-      }
-    };
-
     fetchCommandes();
   }, []);
+
+  const fetchCommandes = async () => {
+    try {
+      const response = await fetch('http://localhost:3030/commande/getcommande');
+      const data: GroupedCommandes[] = await response.json();
+      setGroupedCommandes(data);
+    } catch (error) {
+      console.error('Error fetching commandes:', error);
+    }
+  };
+
+  const changeStatus = async (commandeId: string, newStatus: string) => {
+    try {
+      const response = await fetch('http://localhost:3030/commande/updatecommande', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ commandeId, newStatus }),
+      });
+      const updatedCommande: Commande = await response.json();
+      // Update the state to reflect the changes
+      setGroupedCommandes(prevState =>
+        prevState.map(group =>
+          ({
+            ...group,
+            commandes: group.commandes.map(commande =>
+              commande._id === updatedCommande._id ? { ...commande, status: updatedCommande.status } : commande
+            )
+          })
+        )
+      );
+    } catch (error) {
+      console.error('Error updating status:', error);
+    }
+  };
 
   return (
     <div className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
@@ -45,19 +71,19 @@ const TableThree: React.FC = () => {
                 <p className={`inline-flex rounded-full bg-opacity-10 py-1 px-3 text-sm font-medium ${getStatusClasses(commande.status)}`}>
                   {commande.status}
                 </p>
+                <div className="flex items-center space-x-3.5 mt-2">
+                  <button className="hover:text-primary" onClick={() => changeStatus(commande._id, 'Paid')}>
+                    Mark as Paid
+                  </button>
+                  <button className="hover:text-primary" onClick={() => changeStatus(commande._id, 'Unpaid')}>
+                    Mark as Unpaid
+                  </button>
+                  <button className="hover:text-primary" onClick={() => changeStatus(commande._id, 'Pending')}>
+                    Mark as Pending
+                  </button>
+                </div>
               </div>
             ))}
-            <div className="flex items-center space-x-3.5 mt-4">
-              <button className="hover:text-primary">
-                {/* Icon 1 */}
-              </button>
-              <button className="hover:text-primary">
-                {/* Icon 2 */}
-              </button>
-              <button className="hover:text-primary">
-                {/* Icon 3 */}
-              </button>
-            </div>
           </div>
         ))}
       </div>

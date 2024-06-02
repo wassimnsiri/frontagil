@@ -20,10 +20,10 @@ const Header = () => {
                 Home
               </Link>
               <Link 
-                to="/about" 
+                to="/reclamation" 
                 className="text-sm font-medium text-gray-300 hover:text-yellow- transition duration-300 ease-in-out"
               >
-                About
+                reclamation
               </Link>
               <Link 
                 to="/services" 

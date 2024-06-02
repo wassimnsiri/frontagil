@@ -2,7 +2,7 @@ import DefaultLayout from '../layout/DefaultLayout';
 
 import TableThree from '../components/Tables/TableThree';
 
-export const Chauffeur = () => {
+export const Commande = () => {
 
     return (
    <DefaultLayout>
@@ -12,3 +12,5 @@ export const Chauffeur = () => {
     </DefaultLayout>
     );
     }
+
+    
