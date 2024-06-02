@@ -26,6 +26,8 @@ import { Depot } from './pages/Depot';
 import { Chauffeur } from './pages/Chauffeurs';
 import { Commande } from './pages/Commande';
 import Reclamation from './pages/Gerant_layout/reclamation';
+import Reclamations from './pages/Gerant_layout/reclamationlayout';
+import ReclamationList from './pages/Gerant_layout/mesreclamation';
 
 
 
@@ -167,11 +169,20 @@ function App() {
           }
         />
          <Route
+          path="/mesreclamation"
+          element={
+            <>
+              <PageTitle title="Basic Chart | TailAdmin - Tailwind CSS Admin Dashboard Template" />
+              <ReclamationList />
+            </>
+          }
+        />
+         <Route
           path="/reclamation"
           element={
             <>
               <PageTitle title="Basic Chart | TailAdmin - Tailwind CSS Admin Dashboard Template" />
-              <Reclamation />
+              <Reclamations />
             </>
           }
         />
