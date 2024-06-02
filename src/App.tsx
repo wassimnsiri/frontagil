@@ -25,6 +25,7 @@ import Movies from './pages/movie';
 import { Depot } from './pages/Depot';
 import { Chauffeur } from './pages/Chauffeurs';
 import Panier from './pages/Gerant_layout/panier';
+import TableThree from './components/Tables/TableThree';
 
 
 
@@ -67,7 +68,7 @@ function App() {
           element={
             <>
               <PageTitle title="Calendar | Movie Flow" />
-              <Calendar />
+              <TableThree />
             </>
           }
         />

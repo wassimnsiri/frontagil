@@ -41,6 +41,34 @@ const Panier: React.FC<PanierProps> = ({ panier = [], removeItem, setPanier }) =
             console.error('Error making payment:', error);
         }
     };
+    const passCommade = async () => {
+        try {
+            const priceInCents = parseInt(calculateTotal());
+            const userId = '6647f9f6420f66a0d5de1fdd'; 
+            const commandeprice = priceInCents// L'ID de l'utilisateur, assurez-vous de l'obtenir correctement
+            const commandes = panier.map(produit => ({
+                productId: produit._id,
+                quantity: produit.quantite || 1,
+                            }));
+    
+            const response = await fetch('http://localhost:3030/commande/addcommande', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ userId, produits: commandes,commandeprice }),
+            });
+    
+            if (!response.ok) {
+                throw new Error('Failed to make commande');
+            }
+    
+            // Réinitialisez éventuellement le panier après avoir passé la commande avec succès
+            setPanier([]);
+        } catch (error) {
+            console.error('Error making commande:', error);
+        }
+    }
     
 
     return (
@@ -82,7 +110,10 @@ const Panier: React.FC<PanierProps> = ({ panier = [], removeItem, setPanier }) =
                 <span>${calculateTotal()}</span>
             </div>
             <button
-                onClick={handleMakePayment}
+        onClick={() => {
+            handleMakePayment();
+            passCommade();
+        }}
                 className="mt-4 w-full bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline transition duration-300"
             >
                 Proceed to Checkout
