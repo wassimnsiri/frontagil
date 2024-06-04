@@ -28,6 +28,9 @@ import { Commande } from './pages/Commande';
 import Reclamation from './pages/Gerant_layout/reclamation';
 import Reclamations from './pages/Gerant_layout/reclamationlayout';
 import ReclamationList from './pages/Gerant_layout/mesreclamation';
+import Mescommande from './pages/Gerant_layout/mescomande';
+import Mescommandelayout from './pages/Gerant_layout/mescommandelayout';
+import ReclamationAdmin from './pages/Reclamation';
 
 
 
@@ -165,6 +168,24 @@ function App() {
             <>
               <PageTitle title="Basic Chart | TailAdmin - Tailwind CSS Admin Dashboard Template" />
               <Welcome />
+            </>
+          }
+        />
+          <Route
+          path="/mescommande"
+          element={
+            <>
+              <PageTitle title="Basic Chart | TailAdmin - Tailwind CSS Admin Dashboard Template" />
+              <Mescommandelayout/>
+            </>
+          }
+        />
+           <Route
+          path="/ReclamationAdmin"
+          element={
+            <>
+              <PageTitle title="Basic Chart | TailAdmin - Tailwind CSS Admin Dashboard Template" />
+              <ReclamationAdmin/>
             </>
           }
         />

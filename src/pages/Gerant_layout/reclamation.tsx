@@ -36,6 +36,7 @@ const Reclamation: React.FC = () => {
         await axios.post('http://localhost:3030/reclamation/addreclamation', {
           userId: userData._id, // Use userData only if it's not null
           message: reclamationText,
+          username: userData.username,
         });
 
         console.log('Réclamation envoyée:', reclamationText);
