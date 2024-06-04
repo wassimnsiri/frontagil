@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { Container, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TablePagination, TextField, InputAdornment, IconButton } from '@mui/material';
+import { Container, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TablePagination, TextField, InputAdornment, IconButton, Button } from '@mui/material';
 import axios from 'axios';
 import Reclamation from '../components/models/Reclamation';
-
 
 const ReclamationAdmin: React.FC = () => {
   const [reclamations, setReclamations] = useState<Reclamation[]>([]);
@@ -21,17 +20,6 @@ const ReclamationAdmin: React.FC = () => {
     };
     fetchReclamations();
   }, []);
-  
-    const changeStatus = async () => {
-        try {
-            const response = await axios.post('http://localhost:3030/reclamation/changestatus', {
-            status: 'done',
-            });
-            console.log(response.data);
-        } catch (error) {
-            console.error('Failed to update reclamation status', error);
-        }
-    }
 
   const handleChangePage = (event: unknown, newPage: number) => {
     setPage(newPage);
@@ -46,8 +34,21 @@ const ReclamationAdmin: React.FC = () => {
     setSearch(event.target.value);
   };
 
+  const handleChangeStatus = async (reclamationId: string, newStatus: "pending" | "treated") => {
+    try {
+      await axios.post('http://localhost:3030/reclamation/changestatus', { reclamationId, newStatus });
+      setReclamations((prevReclamations) => 
+        prevReclamations.map((reclamation) => 
+          reclamation._id === reclamationId ? { ...reclamation, status: newStatus } : reclamation
+        )
+      );
+    } catch (error) {
+      console.error('Failed to update status', error);
+    }
+  };
+
   const filteredReclamations = reclamations.filter((reclamation) =>
-    reclamation.message.toString().includes(search.toLowerCase())
+    reclamation.message.toString().toLowerCase().includes(search.toLowerCase())
   );
 
   return (
@@ -74,9 +75,9 @@ const ReclamationAdmin: React.FC = () => {
               <TableCell>ID</TableCell>
               <TableCell>User ID</TableCell>
               <TableCell>Message</TableCell>
-              <TableBody>username</TableBody>
-         
+              <TableCell>Username</TableCell>
               <TableCell>Statut</TableCell>
+              <TableCell>Action</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -86,8 +87,15 @@ const ReclamationAdmin: React.FC = () => {
                 <TableCell>{reclamation.userId}</TableCell>
                 <TableCell>{reclamation.message}</TableCell>
                 <TableCell>{reclamation.username}</TableCell>
-              
-                <TableCell >{reclamation.status} </TableCell>
+                <TableCell>{reclamation.status}</TableCell>
+                <TableCell>
+                  <Button 
+                    variant="contained" 
+                    color="primary" 
+                    onClick={() => handleChangeStatus(reclamation._id, reclamation.status === "pending" ? "treated" : "pending")}>
+                    Change Status
+                  </Button>
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>
