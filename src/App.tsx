@@ -30,7 +30,8 @@ import Reclamations from './pages/Gerant_layout/reclamationlayout';
 import ReclamationList from './pages/Gerant_layout/mesreclamation';
 import Mescommande from './pages/Gerant_layout/mescomande';
 import Mescommandelayout from './pages/Gerant_layout/mescommandelayout';
-import ReclamationAdmin from './pages/Reclamation';
+import { RecAdmin } from './pages/reclamarioadminlayout';
+
 
 
 
@@ -185,7 +186,7 @@ function App() {
           element={
             <>
               <PageTitle title="Basic Chart | TailAdmin - Tailwind CSS Admin Dashboard Template" />
-              <ReclamationAdmin/>
+              <RecAdmin/>
             </>
           }
         />

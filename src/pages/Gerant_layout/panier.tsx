@@ -1,5 +1,7 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Produit from "../../components/models/Produit";
+import User from '../../model/user';
+import { fetchUserData1 } from '../../network/user_services';
 
 interface PanierProps {
     panier: Produit[];
@@ -11,14 +13,34 @@ const Panier: React.FC<PanierProps> = ({ panier = [], removeItem, setPanier }) =
     const calculateTotal = () => {
         return panier.reduce((total, produit) => total + produit.prix * (produit.quantite || 1), 0).toFixed(2);
     };
+    const [userData, setUserData] = useState<User | null>(null);  const [loading, setLoading] = useState(true); // Add loading state
 
+
+    useEffect(() => {
+      const fetchData = async () => {
+        try {
+          const userData = await fetchUserData1();
+          setUserData(userData);
+          setLoading(false); // Set loading to false when data is fetched
+        } catch (error) {
+          // Handle data fetching errors
+        }
+      };
+  
+      fetchData();
+    }, []);
     const handleMakePayment = async () => {
-        //const price = calculateTotal();
+        const invalidQuantity = panier.some(item => item.quantite === 0 || isNaN(item.quantite));
+        if (invalidQuantity) {
+            alert('Invalid quantity for product');
+            return; // Stop payment process if there are invalid quantities
+        }
+    
         const priceInCents = parseInt(calculateTotal()); 
         try {
             const paymentData = {
                 paymentToken: 'pm_card_visa',
-                userId: '6647f9f6420f66a0d5de1fdd',
+                userId: userData?._id,
                 price: priceInCents * 100,
             };
     
@@ -31,44 +53,51 @@ const Panier: React.FC<PanierProps> = ({ panier = [], removeItem, setPanier }) =
                 body: JSON.stringify(paymentData),
             });
     
-            if (!response.ok) {
+            if (response.ok) {
+                // Payment successful
+                alert('Payment successful');
+            } else {
                 throw new Error('Failed to make payment');
             }
-    
-            // Optionally, you can reset the cart state after successful payment
-           // setPanier([]);
         } catch (error) {
             console.error('Error making payment:', error);
         }
     };
-    const passCommade = async () => {
+    
+    
+    const passCommande = async () => {
         try {
             const priceInCents = parseInt(calculateTotal());
             const userId = '6647f9f6420f66a0d5de1fdd'; 
-            const commandeprice = priceInCents// L'ID de l'utilisateur, assurez-vous de l'obtenir correctement
+            const commandeprice = priceInCents; // L'ID de l'utilisateur, assurez-vous de l'obtenir correctement
             const commandes = panier.map(produit => ({
                 productId: produit._id,
                 quantity: produit.quantite || 1,
-                            }));
+            }));
     
             const response = await fetch('http://localhost:3030/commande/addcommande', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ userId, produits: commandes,commandeprice }),
+                body: JSON.stringify({ userId, produits: commandes, commandeprice }),
             });
     
-            if (!response.ok) {
-                throw new Error('Failed to make commande');
+            if (response.status === 400) {
+                // Invalid quantity for product
+                alert('Invalid quantity for product');
+            } else if (response.ok) {
+                // Command passed successfully
+                alert('Command passed successfully');
+                // Réinitialisez éventuellement le panier après avoir passé la commande avec succès
+                setPanier([]);
+            } else {
+                throw new Error('Failed to make command');
             }
-    
-            // Réinitialisez éventuellement le panier après avoir passé la commande avec succès
-            setPanier([]);
         } catch (error) {
-            console.error('Error making commande:', error);
+            console.error('Error making command:', error);
         }
-    }
+    };
     
 
     return (
@@ -112,7 +141,7 @@ const Panier: React.FC<PanierProps> = ({ panier = [], removeItem, setPanier }) =
             <button
         onClick={() => {
             handleMakePayment();
-            passCommade();
+            passCommande();
         }}
                 className="mt-4 w-full bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline transition duration-300"
             >
