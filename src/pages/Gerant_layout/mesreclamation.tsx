@@ -1,26 +1,45 @@
 import React, { useState, useEffect } from 'react';
 import { Typography, Paper, Grid, Grow, CircularProgress, Button } from '@mui/material';
-import axios from 'axios'; // Import axios for making HTTP requests
+import axios from 'axios';
 import Reclamation from '../../components/models/Reclamation';
+import User from '../../model/user';
+import { fetchUserData1 } from '../../network/user_services';
 
 const ReclamationList = () => {
   const [reclamations, setReclamations] = useState<Reclamation[]>([]);
   const [loading, setLoading] = useState(true);
+  const [userData, setUserData] = useState<User | null>(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const userData = await fetchUserData1();
+        setUserData(userData);
+        // Do not set loading to false here
+      } catch (error) {
+        // Handle data fetching errors
+      }
+    };
+
+    fetchData();
+  }, []);
 
   useEffect(() => {
     const fetchReclamations = async () => {
       try {
-        const response = await axios.get('http://localhost:3030/reclamation/consultermesreclamation/6647f9f6420f66a0d5de1fdd');
-        setReclamations(response.data.reclamations);
-        setLoading(false);
+        if (userData) {
+          const response = await axios.get(`http://localhost:3030/reclamation/consultermesreclamation/${userData._id}`);
+          setReclamations(response.data.reclamations);
+        }
       } catch (error) {
         console.error('Error fetching reclamations:', error);
-        setLoading(false);
+      } finally {
+        setLoading(false); // Set loading to false after data is fetched
       }
     };
 
     fetchReclamations();
-  }, []);
+  }, [userData]);
 
   return (
     <div style={{ flexGrow: 1, padding: '16px' }}>
@@ -37,7 +56,6 @@ const ReclamationList = () => {
                 <Paper elevation={3} style={{ padding: '16px', textAlign: 'center', color: '#333', height: '100%', transition: 'transform 0.3s ease' }}>
                   <Typography variant="h6">{reclamation.message}</Typography>
                   <Typography variant="body1" color="textSecondary">Statut: {reclamation.status}</Typography>
-                  {/* Add any additional actions or buttons */}
                   <Button variant="outlined" color="primary" size="small" fullWidth>
                     Voir détails
                   </Button>

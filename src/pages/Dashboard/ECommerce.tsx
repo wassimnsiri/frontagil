@@ -8,27 +8,28 @@ import TableOne from '../../components/Tables/TableOne';
 import DefaultLayout from '../../layout/DefaultLayout';
 import ChartSubscriptionsByDate from '../../components/Charts/ChartSubscriptionByDate';
 import ChartVerifiedUsers from '../../components/Charts/ChartVerifiedUsers';
-import { fetchTotalSubscriptionRevenue } from '../../network/stats_services';
+
+import axios from 'axios';
 
 const ECommerce: React.FC = () => {
   const [totalRevenue, setTotalRevenue] = useState(0);
+
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchTotalRevenue = async () => {
       try {
-        const response = await fetchTotalSubscriptionRevenue();
-        setTotalRevenue(response.totalRevenue);
+        const response = await axios.get('http://localhost:3030/commande/test');
+        setTotalRevenue(response.data.totalprice);
       } catch (error) {
         console.error('Error fetching total revenue:', error);
       }
     };
 
-    fetchData();
+    fetchTotalRevenue();
   }, []);
-
   return (
     <DefaultLayout>
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 xl:grid-cols-4 2xl:gap-7.5">
-        <CardDataStats title="Total revenus" total={`${totalRevenue.toFixed(2)}TND`}   levelUp>
+      <CardDataStats title="Total Revenue" total={`${totalRevenue} TND`} levelUp>
           <svg
             className="fill-primary dark:fill-white"
             width="22"

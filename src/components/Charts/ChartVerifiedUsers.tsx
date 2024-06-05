@@ -1,63 +1,64 @@
 import { ApexOptions } from 'apexcharts';
 import React, { useEffect, useState } from 'react';
 import ReactApexChart from 'react-apexcharts';
-import { fetchVerifiedUsersNumber } from '../../network/stats_services';
 
 interface ChartThreeState {
   series: number[];
 }
 
 const options: ApexOptions = {
-    chart: {
-      fontFamily: 'Satoshi, sans-serif',
-      type: 'donut',
+  chart: {
+    fontFamily: 'Satoshi, sans-serif',
+    type: 'donut',
+  },
+  colors: ['#4CAF50', '#FF5733'],
+  labels: ['Verified Users', 'Unverified Users'],
+  legend: {
+    show: false,
+    position: 'bottom',
+  },
+  plotOptions: {
+    pie: {
+      donut: {
+        size: '65%',
+        background: 'transparent',
+      },
     },
-    colors: ['#4CAF50', '#FF5733'],
-    labels: ['Verified Users', 'Unverified Users'],
-    legend: {
-      show: false,
-      position: 'bottom',
-    },
-    plotOptions: {
-      pie: {
-        donut: {
-          size: '65%',
-          background: 'transparent',
+  },
+  dataLabels: {
+    enabled: false,
+  },
+  responsive: [
+    {
+      breakpoint: 2600,
+      options: {
+        chart: {
+          width: 380,
         },
       },
     },
-    dataLabels: {
-      enabled: false,
+    {
+      breakpoint: 640,
+      options: {
+        chart: {
+          width: 200,
+        },
+      },
     },
-    responsive: [
-      {
-        breakpoint: 2600,
-        options: {
-          chart: {
-            width: 380,
-          },
-        },
-      },
-      {
-        breakpoint: 640,
-        options: {
-          chart: {
-            width: 200,
-          },
-        },
-      },
-    ],
-  };
+  ],
+};
 
 const ChartVerifiedUsers: React.FC = () => {
   const [state, setState] = useState<ChartThreeState>({
-    series: [],
+    series: [0, 0],
   });
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const data = await fetchVerifiedUsersNumber();
+        const response = await fetch('http://localhost:3030/user/wassim/stats');
+        const data = await response.json();  // Ensure response is parsed as JSON
+
         const verifiedUsersCount = Math.round(data.verifiedUsersCount);
         const inverseUsersCount = Math.round(data.inverseUsersCount);
 
@@ -70,15 +71,7 @@ const ChartVerifiedUsers: React.FC = () => {
     };
 
     fetchData();
-  }, []); 
-  const handleReset = () => {
-    setState((prevState) => ({
-      ...prevState,
-      series: [65, 34, 12, 56],
-    }));
-  };
-  handleReset;
-
+  }, []);
   return (
     <div className="sm:px-7.5 col-span-12 rounded-sm border border-stroke bg-white px-5 pb-5 pt-7.5 shadow-default dark:border-strokedark dark:bg-boxdark xl:col-span-5">
       <div className="mb-3 justify-between gap-4 sm:flex">
