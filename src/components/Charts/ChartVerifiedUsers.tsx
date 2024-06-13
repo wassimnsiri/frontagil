@@ -61,7 +61,7 @@ const ChartVerifiedUsers: React.FC = () => {
 
         const verifiedUsersCount = Math.round(data.verifiedUsersCount);
         const inverseUsersCount = Math.round(data.inverseUsersCount);
-
+ 
         setState({
           series: [verifiedUsersCount, inverseUsersCount],
         });

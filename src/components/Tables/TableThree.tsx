@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Commande, GroupedCommandes } from '../models/Commande';
+import { fetchUserData1 } from '../../network/user_services';
+import User from '../models/User';
 
 const getStatusClasses = (status: string) => {
   switch (status) {
@@ -16,6 +18,23 @@ const getStatusClasses = (status: string) => {
 
 const TableThree: React.FC = () => {
   const [groupedCommandes, setGroupedCommandes] = useState<GroupedCommandes[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [userData, setUserData] = useState<User | null>(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const userData = await fetchUserData1();
+        setUserData(userData);
+        setLoading(false); // Set loading to false when data is fetched
+      } catch (error) {
+        // Handle data fetching errors
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   useEffect(() => {
     fetchCommandes();
@@ -43,19 +62,21 @@ const TableThree: React.FC = () => {
       const updatedCommande: Commande = await response.json();
       // Update the state to reflect the changes
       setGroupedCommandes(prevState =>
-        prevState.map(group =>
-          ({
-            ...group,
-            commandes: group.commandes.map(commande =>
-              commande._id === updatedCommande._id ? { ...commande, status: updatedCommande.status } : commande
-            )
-          })
-        )
+        prevState.map(group => ({
+          ...group,
+          commandes: group.commandes.map(commande =>
+            commande._id === updatedCommande._id ? { ...commande, status: updatedCommande.status } : commande
+          ),
+        }))
       );
     } catch (error) {
       console.error('Error updating status:', error);
     }
   };
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
@@ -71,17 +92,19 @@ const TableThree: React.FC = () => {
                 <p className={`inline-flex rounded-full bg-opacity-10 py-1 px-3 text-sm font-medium ${getStatusClasses(commande.status)}`}>
                   {commande.status}
                 </p>
-                <div className="flex items-center space-x-3.5 mt-2">
-                  <button className="hover:text-primary" onClick={() => changeStatus(commande._id, 'Paid')}>
-                    Mark as Paid
-                  </button>
-                  <button className="hover:text-primary" onClick={() => changeStatus(commande._id, 'Unpaid')}>
-                    Mark as Unpaid
-                  </button>
-                  <button className="hover:text-primary" onClick={() => changeStatus(commande._id, 'Pending')}>
-                    Mark as Pending
-                  </button>
-                </div>
+                {userData && (userData.role === 'admin' || userData.role === 'intervenant') && (
+                  <div className="flex items-center space-x-3.5 mt-2">
+                    <button className="hover:text-primary" onClick={() => changeStatus(commande._id, 'Paid')}>
+                      Mark as Paid
+                    </button>
+                    <button className="hover:text-primary" onClick={() => changeStatus(commande._id, 'Unpaid')}>
+                      Mark as Unpaid
+                    </button>
+                    <button className="hover:text-primary" onClick={() => changeStatus(commande._id, 'Pending')}>
+                      Mark as Pending
+                    </button>
+                  </div>
+                )}
               </div>
             ))}
           </div>

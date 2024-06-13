@@ -24,13 +24,11 @@ const LoginP = () => {
             localStorage.setItem('token', response.token);
             localStorage.setItem('username', response.user.username);
             localStorage.setItem('id', response.user._id as string);
-            localStorage.setItem('role', response.user.role as string);
+       
 
-            if (response.user.role === 'admin') {
+          
                 navigate('/');
-            } else if (response.user.role === 'gerant') {
-                navigate('/welcome');
-            }
+         
         } catch (error: any) {
             setError(error.message);
         }

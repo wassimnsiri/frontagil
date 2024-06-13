@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import ReactApexChart from 'react-apexcharts';
 import { ApexOptions } from 'apexcharts';
-import { fetchmoviesStatsparRapportRating } from '../../network/movie_services';
-interface Movie {
-  title: string;
-  averageRating: number;
+import { fetchCountCommandeByDate } from '../../network/produit_services';
+
+
+interface CommandeCount {
+  _id: string;
+  count: number;
 }
 
 const defaultOptions: ApexOptions = {
@@ -90,7 +92,6 @@ const defaultOptions: ApexOptions = {
       },
     },
     min: 0,
-    max: 10,
   },
 };
 
@@ -101,20 +102,19 @@ const ChartOne: React.FC = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const data: Movie[] = await fetchmoviesStatsparRapportRating(); // Define the expected return type
-        const titles = data.map((movie) => movie.title);
-        const ratings = data.map((movie) => movie.averageRating);
+        const data: CommandeCount[] = await fetchCountCommandeByDate();
+        const dates = data.map((commande) => commande._id);
+        const counts = data.map((commande) => commande.count);
 
-
-        setXAxisCategories(titles);
+        setXAxisCategories(dates);
         setSeries([
           {
-            name: 'Movie Ratings',
-            data: ratings,
+            name: 'Commandes Count',
+            data: counts,
           },
         ]);
       } catch (error) {
-        console.error('Error fetching movie data:', error);
+        console.error('Error fetching commande data:', error);
       }
     };
 
@@ -130,18 +130,8 @@ const ChartOne: React.FC = () => {
               <span className="block h-2.5 w-full max-w-2.5 rounded-full bg-primary"></span>
             </span>
             <div>
-              <h1 className="font-semibold text-primary"> Film Rating</h1>
-              
+              <h1 className="font-semibold text-primary"> Commande Count by Date</h1>
             </div>
-          </div>
-          <div className="flex min-w-47.5">
-            
-        
-          </div>
-        </div>
-        <div className="flex">
-          <div className="flex rounded-md bg-whiter p-1.5 dark:bg-meta-4">
-           
           </div>
         </div>
       </div>
