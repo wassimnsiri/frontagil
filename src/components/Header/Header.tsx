@@ -14,7 +14,7 @@ const Header = () => {
             </div>
             <nav className="flex space-x-6">
               <Link 
-                to="/" 
+                to="/mesreclamation" 
                 className="text-sm font-medium text-gray-300 hover:text-yellow-400 transition duration-300 ease-in-out"
               >
                 Home

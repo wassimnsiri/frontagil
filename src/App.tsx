@@ -15,7 +15,7 @@ import { UsersDahboard } from './pages/Users/UsersDashboard';
 import Login from './pages/Users/LoginInterface';
 import CreateTaskForm from './components/Tasks/CreateTaskForm';
 import { Produit } from './pages/produit';
-import { Rank } from './pages/Rank';
+
 import Tables from './pages/Tables';
 import TaskDetails from './components/Tasks/TaskDetails';
 import Welcome from './pages/Gerant_layout/welcom';
@@ -25,12 +25,12 @@ import Movies from './pages/movie';
 import { Depot } from './pages/Depot';
 import { Chauffeur } from './pages/Chauffeurs';
 import { Commande } from './pages/Commande';
-import Reclamation from './pages/Gerant_layout/reclamation';
+
 import Reclamations from './pages/Gerant_layout/reclamationlayout';
-import ReclamationList from './pages/Gerant_layout/mesreclamation';
-import Mescommande from './pages/Gerant_layout/mescomande';
+
 import Mescommandelayout from './pages/Gerant_layout/mescommandelayout';
 import { RecAdmin } from './pages/reclamarioadminlayout';
+import LayoutReclamations from './pages/Gerant_layout/layoutrec';
 
 
 
@@ -195,7 +195,7 @@ function App() {
           element={
             <>
               <PageTitle title="Basic Chart | TailAdmin - Tailwind CSS Admin Dashboard Template" />
-              <ReclamationList />
+              <LayoutReclamations />
             </>
           }
         />

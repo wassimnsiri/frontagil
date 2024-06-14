@@ -61,6 +61,7 @@ const Mescommande: React.FC = () => {
               <TableCell>Date</TableCell>
               <TableCell>Status</TableCell>
               <TableCell>Prix</TableCell>
+              <TableCell>Reason</TableCell>
               {/* Add more columns as necessary */}
             </TableRow>
           </TableHead>
@@ -73,6 +74,7 @@ const Mescommande: React.FC = () => {
                   <Chip label={commande.status} />
                 </TableCell>
                 <TableCell>{commande.commandeprice} €</TableCell>
+                <TableCell>{commande.reason} </TableCell>
                 {/* Add more cells as necessary */}
               </TableRow>
             ))}

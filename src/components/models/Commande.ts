@@ -8,8 +8,9 @@ export interface Commande {
     userId: string;
     commandeprice: number;
     orderDate: string; // Utilisez string si vous recevez des dates en format ISO
-    status: 'Paid' | 'Unpaid' | 'Pending';
+    status: 'pending' | 'shipped' | 'delivered' | 'cancelled';
     produit : Produit // Définir les statuts possibles
+    reason: string;
   }
   
   export interface GroupedCommandes {
