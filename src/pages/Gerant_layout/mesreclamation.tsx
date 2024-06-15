@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import io from 'socket.io-client';
 import {
   Typography, Paper, Grid, Grow, CircularProgress, Button, Modal, Box, TextField,
 } from '@mui/material';
@@ -6,6 +7,13 @@ import axios from 'axios';
 import Reclamation from '../../components/models/Reclamation';
 import User from '../../model/user';
 import { fetchUserData1 } from '../../network/user_services';
+
+interface Message {
+  user: string;
+  message: string;
+}
+
+const socket = io('http://localhost:3030');
 
 const ReclamationList = () => {
   const [reclamations, setReclamations] = useState<Reclamation[]>([]);
@@ -15,6 +23,7 @@ const ReclamationList = () => {
   const [currentReclamation, setCurrentReclamation] = useState<Reclamation | null>(null);
   const [editedMessage, setEditedMessage] = useState('');
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
+  const [messages, setMessages] = useState<Message[]>([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -46,6 +55,20 @@ const ReclamationList = () => {
     fetchReclamations();
   }, [userData]);
 
+  useEffect(() => {
+    socket.on('receiveMessage', (message: Message) => {
+      setMessages((prevMessages) => [...prevMessages, message]);
+    });
+
+    return () => {
+      socket.off('receiveMessage');
+    };
+  }, []);
+
+  const handleSendMessage = (message: string) => {
+    socket.emit('sendMessage', { user: userData?.username, message });
+  };
+
   const handleEdit = (reclamation: Reclamation) => {
     setCurrentReclamation(reclamation);
     setEditedMessage(reclamation.message);
@@ -66,19 +89,12 @@ const ReclamationList = () => {
         throw new Error('Failed to edit reclamation');
       }
 
-      // Update locally after successful API update
       const updatedReclamations = reclamations.map(reclamation =>
         reclamation._id === _id ? { ...reclamation, message: editedMessage } : reclamation
       );
       setReclamations(updatedReclamations);
-
-      // Show success message
       setShowSuccessMessage(true);
-
-      // Close modal after successful update
       handleClose();
-      
-      // Hide success message after 3 seconds
       setTimeout(() => {
         setShowSuccessMessage(false);
       }, 3000);
@@ -166,22 +182,28 @@ const ReclamationList = () => {
         </Box>
       </Modal>
 
-      {/* Success message */}
-      <Modal open={showSuccessMessage} onClose={() => setShowSuccessMessage(false)}>
-        <Box sx={{
-          position: 'fixed',
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-          width: 300,
-          bgcolor: 'background.paper',
-          border: '2px solid #000',
-          boxShadow: 24,
-          p: 4,
-        }}>
-          <Typography variant="h6" component="h2">Modification réussie</Typography>
-        </Box>
-      </Modal>
+      <div>
+        <Typography variant="h6">Messages</Typography>
+        {messages.map((msg, index) => (
+          <div key={index}>
+            <strong>{msg.user}:</strong> {msg.message}
+          </div>
+        ))}
+        <TextField
+          label="New Message"
+          fullWidth
+          multiline
+          rows={2}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              const target = e.target as HTMLInputElement;
+              handleSendMessage(target.value);
+              target.value = '';
+              e.preventDefault();
+            }
+          }}
+        />
+      </div>
     </div>
   );
 };

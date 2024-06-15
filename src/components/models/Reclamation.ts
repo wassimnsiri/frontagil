@@ -5,6 +5,7 @@ export interface Reclamation {
     userId: string;
     username: string;
     message: string;
+    adminComment:string;
    // Utilisez string si vous recevez des dates en format ISO
     status: 'pending' | 'treated' ;
   }
