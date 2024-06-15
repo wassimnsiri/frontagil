@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom';
 import DropdownUser from './DropdownUser';
 import LogoIcon from '../../images/logo/logo-icon.svg';
 import DarkModeSwitcher from './DarkModeSwitcher';
+import DropdownNotification from './DropdownNotification';
+import DropdownMessage from './DropdownMessage';
 
 const Header = (props: {
   sidebarOpen: string | boolean | undefined;
@@ -73,6 +75,8 @@ const Header = (props: {
           <ul className="flex items-center gap-2 2xsm:gap-4">
             {/* <!-- Dark Mode Toggler --> */}
             <DarkModeSwitcher />
+            <DropdownNotification />
+            <DropdownMessage />
         </ul>
 
           {/* <!-- User Area --> */}

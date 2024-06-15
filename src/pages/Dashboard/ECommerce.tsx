@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import CardDataStats from '../../components/CardDataStats';
 import ChartOne from '../../components/Charts/ChartOne';
-import ChartThree from '../../components/Charts/ChartThree';
-import ChartTwo from '../../components/Charts/ChartTwo';
-import MapOne from '../../components/Maps/MapOne';
+
+import ChatCard from '../../components/Chat/ChatCard';
+
 import TableOne from '../../components/Tables/TableOne';
 import DefaultLayout from '../../layout/DefaultLayout';
+
+
 import ChartSubscriptionsByDate from '../../components/Charts/ChartSubscriptionByDate';
 import ChartVerifiedUsers from '../../components/Charts/ChartVerifiedUsers';
-
 import axios from 'axios';
 
 const ECommerce: React.FC = () => {
@@ -26,6 +27,7 @@ const ECommerce: React.FC = () => {
 
     fetchTotalRevenue();
   }, []);
+  
   return (
     <DefaultLayout>
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 xl:grid-cols-4 2xl:gap-7.5">
@@ -48,8 +50,7 @@ const ECommerce: React.FC = () => {
             />
           </svg>
         </CardDataStats>
-        
-        
+       
        
       </div>
 
@@ -57,11 +58,11 @@ const ECommerce: React.FC = () => {
         <ChartOne />
         <ChartSubscriptionsByDate/>
         <ChartVerifiedUsers />
-       
+        <ChatCard />
         <div className="col-span-12 xl:col-span-8">
-         
+          <TableOne />
         </div>
- 
+      
       </div>
     </DefaultLayout>
   );

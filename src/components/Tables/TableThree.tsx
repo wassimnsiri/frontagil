@@ -11,6 +11,8 @@ const getStatusClasses = (status: string) => {
       return 'bg-danger text-danger';
     case 'pending':
       return 'bg-warning text-warning';
+    case 'cancelled':
+      return 'bg-gray-400 text-gray-800'; // Example styling for cancelled status
     default:
       return '';
   }
@@ -50,16 +52,20 @@ const TableThree: React.FC = () => {
     }
   };
 
-  const changeStatus = async (commandeId: string, newStatus: string) => {
+  const changeStatus = async (commandeId: string, newStatus: string, reason?: string) => {
     try {
+      const requestBody = reason ? { commandeId, newStatus: 'cancelled', reason } : { commandeId, newStatus };
+      
       const response = await fetch('http://localhost:3030/commande/updatecommande', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ commandeId, newStatus }),
+        body: JSON.stringify(requestBody),
       });
+      
       const updatedCommande: Commande = await response.json();
+      
       // Update the state to reflect the changes
       setGroupedCommandes(prevState =>
         prevState.map(group => ({
@@ -79,7 +85,7 @@ const TableThree: React.FC = () => {
   }
 
   return (
-    <div className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
+    <div className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark sm:px-7.5 xl:pb-1">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {groupedCommandes.map((group, key) => (
           <div key={key} className="border border-stroke rounded-lg p-4 shadow-sm dark:border-strokedark">
@@ -102,6 +108,12 @@ const TableThree: React.FC = () => {
                     </button>
                     <button className="hover:text-primary" onClick={() => changeStatus(commande._id, 'Pending')}>
                       Mark as Pending
+                    </button>
+                    <button className="hover:text-primary" onClick={() => {
+                      const reason = prompt('Enter cancellation reason:');
+                      if (reason) changeStatus(commande._id, 'cancelled', reason);
+                    }}>
+                      Cancel
                     </button>
                   </div>
                 )}
