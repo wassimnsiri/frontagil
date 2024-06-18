@@ -68,7 +68,7 @@ const Panier: React.FC<PanierProps> = ({ panier = [], removeItem, setPanier }) =
     const passCommande = async () => {
         try {
             const priceInCents = parseInt(calculateTotal());
-            const userId = '6647f9f6420f66a0d5de1fdd'; 
+            const userId = userData?._id ; 
             const commandeprice = priceInCents; // L'ID de l'utilisateur, assurez-vous de l'obtenir correctement
             const commandes = panier.map(produit => ({
                 productId: produit._id,

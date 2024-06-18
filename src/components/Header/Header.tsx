@@ -3,6 +3,8 @@
 import { Link } from 'react-router-dom';
 import logo from '../../images/logo_dark.png'; // Make sure to replace this with your logo path
 
+import DropdownNotification from './DropdownNotification1';
+
 const Header = () => {
   return (
   
@@ -11,8 +13,10 @@ const Header = () => {
             <div className="flex items-center space-x-4">
               <img src={logo} alt="Logo" className="w-10 h-10" />
               <h1 className="text-xl font-bold">Agil</h1>
+         
             </div>
             <nav className="flex space-x-6">
+       
               <Link 
                 to="/mesreclamation" 
                 className="text-sm font-medium text-gray-300 hover:text-yellow-400 transition duration-300 ease-in-out"
@@ -32,11 +36,13 @@ const Header = () => {
                 Mes Commandes
               </Link>
               <Link 
-                to="/contact" 
+                to="/mesreclamation" 
                 className="text-sm font-medium text-gray-300 hover:text-yellow- transition duration-300 ease-in-out"
               >
-                Contact
+              Consulter votre reclamation
               </Link>
+              <DropdownNotification/>
+             
             </nav>
           </div>
         </header>
