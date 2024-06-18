@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useSpring, animated } from 'react-spring';
-import axios from 'axios'; // Import axios
+import axios from 'axios';
 import User from '../../model/user';
 import { fetchUserData1 } from '../../network/user_services';
 
@@ -10,15 +10,18 @@ const Reclamation: React.FC = () => {
   const [userData, setUserData] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [alertMessage, setAlertMessage] = useState<string | null>(null);
+  const [title, setTitle] = useState<string>('');
+  const [reason, setReason] = useState<string>('');
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const userData = await fetchUserData1();
         setUserData(userData);
-        setLoading(false); // Set loading to false when data is fetched
       } catch (error) {
-        // Handle data fetching errors
+        console.error('Error fetching user data:', error);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -30,20 +33,22 @@ const Reclamation: React.FC = () => {
     setIsSubmitting(true);
 
     try {
-      // Make sure userData is not null before accessing its properties
       if (userData) {
-        // Make API request to submit reclamation
         await axios.post('http://localhost:3030/reclamation/addreclamation', {
-          userId: userData._id, // Use userData only if it's not null
+          userId: userData._id,
           message: reclamationText,
           username: userData.username,
+          title,
+          reason,
         });
 
         console.log('Réclamation envoyée:', reclamationText);
         setIsSubmitting(false);
         setReclamationText('');
+        setTitle('');
+        setReason('');
         setAlertMessage('Réclamation envoyée avec succès!');
-        setTimeout(() => setAlertMessage(null), 3000); // Clear the alert after 3 seconds
+        setTimeout(() => setAlertMessage(null), 3000);
       } else {
         console.error('User data not available');
       }
@@ -53,7 +58,6 @@ const Reclamation: React.FC = () => {
     }
   };
 
-  // Disable the submit button if userData is null or form is submitting
   const isSubmitDisabled = !userData || isSubmitting;
 
   return (
@@ -61,6 +65,22 @@ const Reclamation: React.FC = () => {
       <animated.div className="max-w-md w-full bg-white p-8 rounded-lg shadow-md">
         <h2 className="text-2xl font-bold mb-6">Formulaire de Réclamation</h2>
         <form onSubmit={handleSubmit} className="space-y-4">
+          <input
+            className="w-full p-2 border border-yellow-500 rounded-md focus:outline-none focus:border-blue-500 text-black"
+            type="text"
+            placeholder="Titre de la réclamation"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            required
+          />
+          <input
+            className="w-full p-2 border border-yellow-500 rounded-md focus:outline-none focus:border-blue-500 text-black"
+            type="text"
+            placeholder="Raison de la réclamation"
+            value={reason}
+            onChange={(e) => setReason(e.target.value)}
+            required
+          />
           <textarea
             className="w-full h-32 p-2 border border-yellow-500 rounded-md focus:outline-none focus:border-blue-500 text-black"
             placeholder="Saisissez votre réclamation..."

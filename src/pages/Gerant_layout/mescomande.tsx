@@ -47,6 +47,9 @@ const Mescommande: React.FC = () => {
                 <Typography variant="body2" color="text.secondary">
                   Prix: {commande.commandeprice} €
                 </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  Reason: {commande.reason} 
+                </Typography>
                 {/* Add more fields as necessary */}
               </CardContent>
             </Card>

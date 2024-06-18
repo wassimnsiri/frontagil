@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import io from 'socket.io-client';
+import axios from 'axios';
 
 // Define the shape of a notification
 interface Notification {
@@ -15,6 +16,19 @@ const DropdownNotification = () => {
 
   const trigger = useRef<HTMLAnchorElement>(null);
   const dropdown = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const fetchNotifications = async () => {
+      try {
+        const response = await axios.get('http://localhost:3030/commande/notifications'); // Adjust the route if needed
+        setNotifications(response.data);
+      } catch (error) {
+        console.error('Error fetching notifications', error);
+      }
+    };
+
+    fetchNotifications();
+  }, []);
 
   useEffect(() => {
     const socket = io('http://localhost:3030'); // Replace with your server URL
