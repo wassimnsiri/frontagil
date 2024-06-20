@@ -2,6 +2,9 @@ import React, { useEffect, useState } from 'react';
 import Produit from "../../components/models/Produit";
 import User from '../../model/user';
 import { fetchUserData1 } from '../../network/user_services';
+import { CardElement, useStripe, useElements, Elements } from '@stripe/react-stripe-js';
+import { StripeCardElement } from '@stripe/stripe-js';
+import stripePromise from './stripePromise';
 
 interface PanierProps {
     panier: Produit[];
@@ -10,49 +13,74 @@ interface PanierProps {
 }
 
 const Panier: React.FC<PanierProps> = ({ panier = [], removeItem, setPanier }) => {
+    const [userData, setUserData] = useState<User | null>(null);
+    const [loading, setLoading] = useState(true);
+    const stripe = useStripe();
+    const elements = useElements();
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const userData = await fetchUserData1();
+                setUserData(userData);
+                setLoading(false);
+            } catch (error) {
+                // Handle data fetching errors
+                console.error('Error fetching user data:', error);
+            }
+        };
+
+        fetchData();
+    }, []);
+
     const calculateTotal = () => {
         return panier.reduce((total, produit) => total + produit.prix * (produit.quantite || 1), 0).toFixed(2);
     };
-    const [userData, setUserData] = useState<User | null>(null);  const [loading, setLoading] = useState(true); // Add loading state
 
-
-    useEffect(() => {
-      const fetchData = async () => {
-        try {
-          const userData = await fetchUserData1();
-          setUserData(userData);
-          setLoading(false); // Set loading to false when data is fetched
-        } catch (error) {
-          // Handle data fetching errors
-        }
-      };
-  
-      fetchData();
-    }, []);
     const handleMakePayment = async () => {
         const invalidQuantity = panier.some(item => item.quantite === 0 || isNaN(item.quantite));
         if (invalidQuantity) {
             alert('Invalid quantity for product');
-            return; // Stop payment process if there are invalid quantities
+            return;
         }
-    
-        const priceInCents = parseInt(calculateTotal()); 
+
+        if (!stripe || !elements) {
+            console.error('Stripe.js not loaded properly');
+            return;
+        }
+
         try {
+            const cardElement = elements.getElement(CardElement);
+            if (!cardElement) {
+                throw new Error('Card element not found');
+            }
+
+            const { error, paymentMethod } = await stripe.createPaymentMethod({
+                type: 'card',
+                card: cardElement as StripeCardElement,
+            });
+
+            if (error) {
+                console.error('Error creating payment method:', error);
+                return;
+            }
+
+            const priceInCents = parseInt(calculateTotal());
             const paymentData = {
-                paymentToken: 'pm_card_visa',
+                paymentMethod: paymentMethod?.id,
                 userId: userData?._id,
                 price: priceInCents * 100,
             };
-    
+
             const response = await fetch('http://localhost:3030/produit/stripe', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': 'Bearer sk_test_51PLDifP9wsPPbHmQFCf93rrDeIHCdSeuXKSzvohrBx8eQcrVr0KK09iuuIWkw8wQ6oX5U4jdXSCA5SMznCeFutRh004AHkZYYQ' ,
+                    'Authorization': 'Bearer sk_test_51PLDifP9wsPPbHmQFCf93rrDeIHCdSeuXKSzvohrBx8eQcrVr0KK09iuuIWkw8wQ6oX5U4jdXSCA5SMznCeFutRh004AHkZYYQ',
                 },
                 body: JSON.stringify(paymentData),
             });
-    
+
             if (response.ok) {
                 // Payment successful
                 alert('Payment successful');
@@ -63,18 +91,18 @@ const Panier: React.FC<PanierProps> = ({ panier = [], removeItem, setPanier }) =
             console.error('Error making payment:', error);
         }
     };
-    
-    
+
     const passCommande = async () => {
         try {
             const priceInCents = parseInt(calculateTotal());
-            const userId = userData?._id ; 
-            const commandeprice = priceInCents; // L'ID de l'utilisateur, assurez-vous de l'obtenir correctement
+            const userId = userData?._id;
+            const commandeprice = priceInCents;
+
             const commandes = panier.map(produit => ({
                 productId: produit._id,
                 quantity: produit.quantite || 1,
             }));
-    
+
             const response = await fetch('http://localhost:3030/commande/addcommande', {
                 method: 'POST',
                 headers: {
@@ -82,14 +110,14 @@ const Panier: React.FC<PanierProps> = ({ panier = [], removeItem, setPanier }) =
                 },
                 body: JSON.stringify({ userId, produits: commandes, commandeprice }),
             });
-    
+
             if (response.status === 400) {
                 // Invalid quantity for product
                 alert('Invalid quantity for product');
             } else if (response.ok) {
                 // Command passed successfully
                 alert('Command passed successfully');
-                // Réinitialisez éventuellement le panier après avoir passé la commande avec succès
+                // Optionally reset the cart after successful order
                 setPanier([]);
             } else {
                 throw new Error('Failed to make command');
@@ -98,7 +126,6 @@ const Panier: React.FC<PanierProps> = ({ panier = [], removeItem, setPanier }) =
             console.error('Error making command:', error);
         }
     };
-    
 
     return (
         <div className="mt-8 p-4 bg-gray-100 rounded-lg shadow-lg">
@@ -138,17 +165,44 @@ const Panier: React.FC<PanierProps> = ({ panier = [], removeItem, setPanier }) =
                 <span>Total:</span>
                 <span>${calculateTotal()}</span>
             </div>
+            <div className="mt-4">
+                <label className="block text-sm font-medium text-gray-700">Card details</label>
+                <CardElement
+                    options={{
+                        style: {
+                            base: {
+                                fontSize: '16px',
+                                color: '#424770',
+                                '::placeholder': {
+                                    color: '#aab7c4',
+                                },
+                            },
+                            invalid: {
+                                color: '#9e2146',
+                            },
+                        },
+                    }}
+                />
+            </div>
             <button
-        onClick={() => {
-            handleMakePayment();
-            passCommande();
-        }}
+                onClick={() => {
+                    handleMakePayment();
+                    passCommande();
+                }}
                 className="mt-4 w-full bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline transition duration-300"
             >
                 Proceed to Checkout
             </button>
         </div>
     );
-}
+};
 
-export default Panier;
+const PanierWrapper: React.FC<PanierProps> = (props) => {
+    return (
+        <Elements stripe={stripePromise}>
+            <Panier {...props} />
+        </Elements>
+    );
+};
+
+export default PanierWrapper;
