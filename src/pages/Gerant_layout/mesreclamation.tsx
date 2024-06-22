@@ -58,7 +58,7 @@ const ReclamationList = () => {
   }, [userData]);
 
   useEffect(() => {
-    socket.on('receiveMessage', (message: Message) => {
+    socket.on(' ', (message: Message) => {
       setMessages((prevMessages) => [...prevMessages, message]);
     });
 

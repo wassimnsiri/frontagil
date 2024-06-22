@@ -31,6 +31,7 @@ import Reclamations from './pages/Gerant_layout/reclamationlayout';
 import Mescommandelayout from './pages/Gerant_layout/mescommandelayout';
 import { RecAdmin } from './pages/reclamarioadminlayout';
 import LayoutReclamations from './pages/Gerant_layout/layoutrec';
+import UpdateUser from './pages/UpdateUser';
 
 
 
@@ -122,6 +123,15 @@ function App() {
             <>
               <PageTitle title="Basic Chart | Movie Flow" />
               <UsersDahboard />
+            </>
+          }
+        />
+           <Route
+          path="/w"
+          element={
+            <>
+              <PageTitle title="Basic Chart | Movie Flow" />
+              <UpdateUser />
             </>
           }
         />

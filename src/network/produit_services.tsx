@@ -1,3 +1,5 @@
+import { Produit } from "../pages/produit";
+
 const BASE_URL = 'http://localhost:3030';
 
 // Define a type for the produit data (without optional properties)
@@ -18,6 +20,23 @@ export const fetchProduit = async () => {
     throw error;
   }
 };
+export const addproduit = async () =>
+{
+  try {
+    const response = await fetch(`${BASE_URL}/produit/ajouter`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(Produit),
+    });
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Error:', error);
+    throw error;
+  }
+}
 
 export const updateProduit = async (id: string, produitData: ProduitData) => {
   try {

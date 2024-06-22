@@ -1,3 +1,4 @@
+import { Commande } from "./Commande";
 import Depot from "./Depot";
 
 interface Chauffeur {
@@ -8,6 +9,7 @@ interface Chauffeur {
     depot: Depot;
     profilePicture: string;
     disponible: boolean;
+    commande:Commande;
 
 
 

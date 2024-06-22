@@ -1,3 +1,4 @@
+import axios from "axios";
 import User from "../model/user";
 
 
@@ -6,7 +7,19 @@ export interface CreateAdminResponse {
   token: string;
   user: User;
 }
-
+export const updateUser = async (id:String, formData:User) => {
+  try {
+    const response = await axios.put(`${BASE_URL}/user/update/${id}`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error updating user:', error);
+    throw error;
+  }
+};
 export const fetchUserData = async () => {
     try {
       const response = await fetch(`${BASE_URL}/user/`);

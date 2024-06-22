@@ -70,6 +70,28 @@ const TableUsers = () => {
       console.error('Error creating admin:', error);
     }
   };
+  const deleteUser = async (userId: string) => {
+    try {
+      const response = await fetch(`http://localhost:3030/user/delete/${userId}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      if (!response.ok) {
+        throw new Error('Failed to delete user');
+      }
+      // Optionally handle response data here if needed
+      const data = await response.json();
+      console.log('User deleted successfully:', data);
+      // Refetch data to update the UI
+      fetchData();
+    } catch (error) {
+      console.error('Error deleting user:', error);
+      // Handle error state or display error message
+    }
+  };
+  
 
   const filteredUsers = userData.filter((user) =>
     user.firstName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -270,17 +292,13 @@ const TableUsers = () => {
             <div className="hidden sm:block p-2.5 text-center xl:p-5">
               <p className="text-black dark:text-white">{user.email}</p>
             </div>
-
             <button
-              className="flex items-center justify-center p-2.5 xl:p-5"
-              onClick={() => toggleBanStatus(user._id)}
+              className="flex items-center justify-center size-10xp xl:p-5 bg-red-200 text-white rounded hover:bg-red-600 transition"
+              onClick={() => deleteUser(user._id)}
             >
-              {bannedUsers.includes(user._id) ? (
-                <FaBan title="Remove Ban" className="text-green-500" />
-              ) : (
-                <FaBan title="Ban This Account" className="text-red-500" />
-              )}
+              Remove User
             </button>
+
           </div>
         ))}
       </div>
