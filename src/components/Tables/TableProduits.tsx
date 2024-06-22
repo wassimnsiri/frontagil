@@ -2,6 +2,7 @@ import { FaSpinner } from "react-icons/fa";
 import { useEffect, useState } from 'react';
 import { fetchProduit, updateProduit, deleteProduit } from "../../network/produit_services";
 import Produit from "../models/Produit";
+import AddProduitModal from "./AddProduitModal";
 
 interface ProduitUpdate {
   name: string;
@@ -15,7 +16,7 @@ const TableProduits = () => {
   const [loading, setLoading] = useState(true);
   const [editingProduit, setEditingProduit] = useState<Produit | null>(null);
   const [formValues, setFormValues] = useState<ProduitUpdate>({ name: '', category: '', quantite: 0, prix: 0 });
-
+  const [showAddModal, setShowAddModal] = useState(false);
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -65,7 +66,9 @@ const TableProduits = () => {
       prix: produit.prix,
     });
   };
-
+  const openAddModal = () => {
+    setShowAddModal(true);
+  };
   return (
     <div className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
       <h4 className="mb-6 text-xl font-semibold text-black dark:text-white">
@@ -140,6 +143,15 @@ const TableProduits = () => {
                 <button className="px-4 py-2 text-sm font-medium text-white bg-red-500 rounded hover:bg-red-600 focus:outline-none" onClick={() => handleDelete(produit._id)}>
                   Delete
                 </button>
+                <button
+        className="px-4 py-2 bg-blue text-white rounded hover:bg-blue-600 focus:outline-none"
+        onClick={openAddModal}
+      >
+        Add Product
+      </button>
+
+      {/* AddProduitModal component */}
+      <AddProduitModal isOpen={showAddModal} closeModal={() => setShowAddModal(false)} />
               </div>
             </div>
           ))}
@@ -171,7 +183,7 @@ const TableProduits = () => {
               />
               <input
                 type="number"
-                step="0.01"
+                step="1"
                 className="border border-gray-300 rounded px-3 py-2 mb-2"
                 placeholder="Price"
                 value={formValues.prix}
@@ -184,9 +196,14 @@ const TableProduits = () => {
                 <button className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600 focus:outline-none" onClick={() => setEditingProduit(null)}>
                   Cancel
                 </button>
+             
+
               </div>
             </div>
           )}
+            
+            {/* Add form */}
+            
         </div>
       )}
     </div>
