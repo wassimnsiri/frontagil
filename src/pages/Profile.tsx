@@ -6,10 +6,11 @@ import { Link } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import User from '../model/user';
 import { fetchUserData1 } from '../network/user_services';
+import UpdateUserModal from './UpdateUser';
 
 const Profile = () => {
   const [userData, setUserData] = useState<User | null>(null);
-
+  const [showAddModal, setShowAddModal] = useState(false);
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -26,6 +27,9 @@ const Profile = () => {
   if (!userData) {
     return <div>Loading...</div>;
   }
+  const openAddModal = () => {
+    setShowAddModal(true);
+  };
   
   return (
     <DefaultLayout>
@@ -130,17 +134,21 @@ const Profile = () => {
               {userData.role}
               </p>
               <div className="mx-auto mt-4.5 mb-5.5 max-w-94 rounded-md border border-stroke py-2.5 shadow-1 dark:border-strokedark dark:bg-[#37404F] flex justify-center">
-                      <button
-                        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-                        onClick={() => {
-                          // Add your navigation logic here
-                          window.location.href = '/w';
-                        }}
-                      >
-                        Edit Profile
-                      </button>
-                    </div>
+              <button
+        className="px-4 py-2 bg-blue text-white rounded hover:bg-blue-600 focus:outline-none"
+        onClick={openAddModal}
+      >
+        Add Product
+      </button>
 
+      {/* AddProduitModal component */}
+      <UpdateUserModal isOpen={showAddModal} closeModal={() => setShowAddModal(false)} />
+              </div>
+            
+
+                  
+        
+          
 
             <div className="mx-auto max-w-180">
               <h4 className="font-semibold text-black dark:text-white">

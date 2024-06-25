@@ -3,26 +3,33 @@ import axios from 'axios';
 import { useParams } from 'react-router-dom';
 import User from '../model/user';
 import { fetchUserData1 } from '../network/user_services';
+import {
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  TextField,
+  Button,
+  CircularProgress,
+  Typography
+} from '@mui/material';
 
-const UpdateUser: React.FC = () => {
+interface Props {
+  isOpen: boolean;
+  closeModal: () => void;
+}
+
+const UpdateUserModal: React.FC<Props> = ({ isOpen, closeModal }) => {
   const { id } = useParams<{ id: string }>();
-  const [user, setUser] = useState({
-    username: '',
-    firstName: '',
-    lastName: '',
-    birthDate: '',
-    bio: '',
-    profilePicture: ''
-  });
-  const [file, setFile] = useState<File | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  
   const [loading, setLoading] = useState(false);
   const [userData, setUserData] = useState<User | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const userData = await fetchUserData1();
+        const userData = await fetchUserData1(); // Pass id parameter to fetchUserData1
         setUserData(userData);
       } catch (error) {
         console.error('Failed to fetch user data:', error);
@@ -30,80 +37,85 @@ const UpdateUser: React.FC = () => {
       }
     };
 
-    fetchData();
-  }, []);
+    if (isOpen) {
+      fetchData();
+    }
+  }, [id, isOpen]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setUser({ ...user, [e.target.name]: e.target.value });
-  };
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      setFile(e.target.files[0]);
+    if (userData) {
+      setUserData({ ...userData, [e.target.name]: e.target.value });
     }
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (!userData) return;
+
+    setLoading(true);
 
     try {
-      setLoading(true);
-      const formData = new FormData();
-      formData.append('username', user.username);
-      formData.append('firstName', user.firstName);
-      formData.append('lastName', user.lastName);
-      formData.append('birthDate', user.birthDate);
-      formData.append('bio', user.bio);
-      if (file) {
-        formData.append('profilePicture', file);
-      }
-
-      const response = await axios.put(`http://localhost:9090/user/update/${userData?._id}`, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
-
+      const response = await axios.put(`http://localhost:3030/user/update/${userData._id}`, userData);
       console.log('User updated successfully:', response.data);
-      alert('User updated successfully');
-      // Optionally, redirect or set a success message
+      closeModal(); // Close the modal on successful update
     } catch (error) {
-      console.error('Error updating user:', error);
+      console.error('Failed to update user:', error);
       setError('Failed to update user. Please try again.');
     } finally {
       setLoading(false);
     }
   };
 
-  if (loading) {
-    return <p>Loading...</p>;
-  }
-
   return (
-    <div>
-      <h2>Update User</h2>
-      <form onSubmit={handleSubmit}>
-        <label>
-          Username:
-          <input type="text" name="username" value={user.username} onChange={handleChange} required />
-        </label>
-        <br />
-        <label>
-          First Name:
-          <input type="text" name="firstName" value={user.firstName} onChange={handleChange} required />
-        </label>
-        <br />
-        <label>
-          Last Name:
-          <input type="text" name="lastName" value={user.lastName} onChange={handleChange} required />
-        </label>
-        <br />
-        
-        {error && <p style={{ color: 'red' }}>{error}</p>}
-        <button type="submit" disabled={loading}>Update User</button>
-      </form>
-    </div>
+    <Dialog open={isOpen} onClose={closeModal}>
+      <DialogTitle>Update User</DialogTitle>
+      <DialogContent>
+        {loading ? (
+          <CircularProgress />
+        ) : (
+          <>
+            {error && <Typography color="error">{error}</Typography>}
+            {userData && (
+              <form onSubmit={handleSubmit}>
+                <TextField
+                  margin="dense"
+                  label="Username"
+                  name="username"
+                  value={userData.username}
+                  onChange={handleChange}
+                  fullWidth
+                />
+                <TextField
+                  margin="dense"
+                  label="First Name"
+                  name="firstName"
+                  value={userData.firstName}
+                  onChange={handleChange}
+                  fullWidth
+                />
+                <TextField
+                  margin="dense"
+                  label="Last Name"
+                  name="lastName"
+                  value={userData.lastName}
+                  onChange={handleChange}
+                  fullWidth
+                />
+                <DialogActions>
+                  <Button onClick={closeModal} color="primary">
+                    Cancel
+                  </Button>
+                  <Button type="submit" color="primary">
+                    Update User
+                  </Button>
+                </DialogActions>
+              </form>
+            )}
+          </>
+        )}
+      </DialogContent>
+    </Dialog>
   );
 };
 
-export default UpdateUser;
+export default UpdateUserModal;

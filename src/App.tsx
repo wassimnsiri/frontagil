@@ -126,15 +126,8 @@ function App() {
             </>
           }
         />
-           <Route
-          path="/w"
-          element={
-            <>
-              <PageTitle title="Basic Chart | Movie Flow" />
-              <UpdateUser />
-            </>
-          }
-        />
+       
+      
         <Route
           path="/login"
           element={

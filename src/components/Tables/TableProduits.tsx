@@ -11,6 +11,7 @@ interface ProduitUpdate {
   prix: number;
 }
 
+
 const TableProduits = () => {
   const [produits, setProduits] = useState<Produit[]>([]);
   const [loading, setLoading] = useState(true);
@@ -154,7 +155,9 @@ const TableProduits = () => {
       <AddProduitModal isOpen={showAddModal} closeModal={() => setShowAddModal(false)} />
               </div>
             </div>
-          ))}
+          )
+          )
+          }
 
           {/* Edit form */}
           {editingProduit && (
