@@ -138,7 +138,7 @@ const Profile = () => {
         className="px-4 py-2 bg-blue text-white rounded hover:bg-blue-600 focus:outline-none"
         onClick={openAddModal}
       >
-        Add Product
+        Modifier user
       </button>
 
       {/* AddProduitModal component */}

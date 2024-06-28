@@ -117,7 +117,7 @@ const TableUsers = () => {
           className="px-4 py-2 bg-blue-500 text-white font-semibold rounded hover:bg-blue-600 transition"
           onClick={() => setShowAddAdminModal(true)} // Open modal
         >
-          Add New Gerant
+          Add New User
         </button>
       </div>
 
