@@ -26,6 +26,7 @@ const ReclamationList = () => {
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState('');
+  const [receivedMessages, setReceivedMessages] = useState<Message[]>([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -62,6 +63,15 @@ const ReclamationList = () => {
       setMessages((prevMessages) => [...prevMessages, message]);
     });
 
+    return () => {
+      socket.off('receiveMessage');
+    };
+  }, []);
+  useEffect(() => {
+    socket.on('receiveMessage', (message: Message) => {
+      setReceivedMessages((prevMessages) => [...prevMessages, message]);
+    });
+  
     return () => {
       socket.off('receiveMessage');
     };

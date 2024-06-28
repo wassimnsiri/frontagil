@@ -26,6 +26,7 @@ const ReclamationAdmin: React.FC = () => {
   const [currentReclamation, setCurrentReclamation] = useState<Reclamation | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState('');
+  const [receivedMessages, setReceivedMessages] = useState<Message[]>([]);
 
   useEffect(() => {
     const fetchReclamations = async () => {
@@ -57,6 +58,15 @@ const ReclamationAdmin: React.FC = () => {
       setNewMessage('');
     }
   };
+  useEffect(() => {
+    socket.on('receiveMessage', (message: Message) => {
+      setReceivedMessages((prevMessages) => [...prevMessages, message]);
+    });
+  
+    return () => {
+      socket.off('receiveMessage');
+    };
+  }, []);
 
   const handleChangePage = (event: unknown, newPage: number) => {
     setPage(newPage);

@@ -267,7 +267,7 @@ const LoginP = () => {
                             onChange={handleEmailChange}
                         />
                         <button
-                            className="bg-yellow-600 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                            className="bg-yellow-600 hover:bg-yellow text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
                             onClick={handleEmailSubmit}
                         >
                             Submit

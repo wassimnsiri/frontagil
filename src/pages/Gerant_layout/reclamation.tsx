@@ -12,6 +12,7 @@ const Reclamation: React.FC = () => {
   const [alertMessage, setAlertMessage] = useState<string | null>(null);
   const [title, setTitle] = useState<string>('');
   const [reason, setReason] = useState<string>('');
+  
 
   useEffect(() => {
     const fetchData = async () => {
