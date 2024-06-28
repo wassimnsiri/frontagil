@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { LoginResponse, login } from '../../network/user_services';
+import { LoginResponse, login, sendPasswordResetEmail } from '../../network/user_services';
 import logoDark from '../../images/logo_dark.png';
 import { useNavigate } from 'react-router-dom';
 
@@ -7,13 +7,36 @@ const LoginP = () => {
     const navigate = useNavigate();
     const [credentials, setCredentials] = useState({ username: '', password: '' });
     const [error, setError] = useState<string>('');
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [email, setEmail] = useState('');
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setCredentials({ ...credentials, [e.target.name]: e.target.value });
     };
 
     const handleForgotPassword = () => {
-        navigate('/resetpassword');
+        setIsModalOpen(true);
+    };
+
+    const handleModalClose = () => {
+        setIsModalOpen(false);
+        setEmail('');
+    };
+
+    const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setEmail(e.target.value);
+    };
+
+    const handleEmailSubmit = async () => {
+        try {
+            // Appel à la fonction de service pour envoyer l'email de réinitialisation
+            await sendPasswordResetEmail(email);
+            console.log('Password reset email sent successfully to:', email);
+            handleModalClose();
+            // Vous pouvez afficher un message à l'utilisateur ici pour confirmer l'envoi de l'email
+        } catch (error: any) {
+            setError(error.message);
+        }
     };
 
     const handleSignIn = async () => {
@@ -25,9 +48,7 @@ const LoginP = () => {
             localStorage.setItem('username', response.user.username);
             localStorage.setItem('id', response.user._id as string);
        
-
-          
-                navigate('/');
+            navigate('/');
          
         } catch (error: any) {
             setError(error.message);
@@ -155,6 +176,33 @@ const LoginP = () => {
                         margin-top: 1em;
                         cursor: pointer;
                     }
+                    .modal {
+                        position: fixed;
+                        top: 0;
+                        left: 0;
+                        width: 100%;
+                        height: 100%;
+                        background: rgba(0, 0, 0, 0.5);
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                    }
+                    .modal-content {
+                        background: #fff;
+                        padding: 2em;
+                        border-radius: 10px;
+                        box-shadow: 0px 0px 10px #000;
+                        max-width: 500px;
+                        width: 100%;
+                        text-align: center;
+                    }
+                    .modal-content input[type="email"] {
+                        width: 80%;
+                        padding: 0.5em;
+                        margin: 1em 0;
+                        border: 1px solid #ccc;
+                        border-radius: 5px;
+                    }
                 `}
             </style>
             <div className="bg-yellow-400 flex justify-center items-center h-screen">
@@ -207,6 +255,32 @@ const LoginP = () => {
                     {error && <p className="text-red-500 text-xs italic">{error}</p>}
                 </div>
             </div>
+            {isModalOpen && (
+                <div className="modal">
+                    <div className="modal-content">
+                        <h2>Reset Password</h2>
+                        <p>Please enter your email address to reset your password.</p>
+                        <input
+                            type="email"
+                            placeholder="Email"
+                            value={email}
+                            onChange={handleEmailChange}
+                        />
+                        <button
+                            className="bg-yellow-600 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                            onClick={handleEmailSubmit}
+                        >
+                            Submit
+                        </button>
+                        <button
+                            className="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                            onClick={handleModalClose}
+                        >
+                            Close
+                        </button>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

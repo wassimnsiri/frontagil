@@ -7,6 +7,23 @@ export interface CreateAdminResponse {
   token: string;
   user: User;
 }
+interface EmailRequest {
+  email: string;
+}
+export const sendPasswordResetEmail = async (email: string): Promise<void> => {
+  const requestBody: EmailRequest = { email };
+
+  try {
+      // Remplacez `YOUR_API_ENDPOINT` par l'URL de votre API back-end pour la réinitialisation du mot de passe
+      const response = await axios.post('http://localhost:3030/user/reset-password', requestBody);
+
+      // Gérer la réponse de votre API si nécessaire
+      console.log('Password reset email sent successfully:', response.data);
+  } catch (error) {
+      // Gérer les erreurs ici, par exemple :
+      throw new Error('Failed to send password reset email. Please try again later.');
+  }
+};
 export const updateUser = async (id:String, formData:User) => {
   try {
     const response = await axios.put(`${BASE_URL}/user/update/${id}`, formData, {
