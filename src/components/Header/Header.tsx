@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import logo from '../../images/logo_dark.png'; // Make sure to replace this with your logo path
 
 import DropdownNotification from './DropdownNotification1';
+import DropdownUser from './DropdownUser';
 
 const Header = () => {
   return (
@@ -18,7 +19,7 @@ const Header = () => {
             <nav className="flex space-x-6">
        
               <Link 
-                to="/mesreclamation" 
+                to="/welcome" 
                 className="text-sm font-medium text-gray-300 hover:text-yellow-400 transition duration-300 ease-in-out"
               >
                 Home
@@ -41,7 +42,7 @@ const Header = () => {
               >
               Consulter votre reclamation
               </Link>
-              <DropdownNotification/>
+              <DropdownUser />
              
             </nav>
           </div>
